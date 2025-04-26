@@ -262,7 +262,8 @@ namespace Mapster.Tool
                 {
                     Name = setting?.TargetPropertyName ?? adaptMember?.Name ?? member.Name,
                     Type = isNullable ? propType.MakeNullable() : propType,
-                    IsReadOnly = isReadOnly,
+                    IsReadOnly = !member.CustomAttributes
+                        .Select(it => it.AttributeType.Name == "AdaptIgnoreAttribute").Any() && isReadOnly,
                     NullableContext = nilAttrArg is byte b ? (byte?)b : null,
                     Nullable = nilAttrArg is byte[] bytes ? bytes : null,
                 });
