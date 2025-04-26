@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Linq.Expressions;
@@ -322,6 +323,7 @@ namespace Mapster.Tool
                         opt.Namespace,
                         builder
                     );
+                var generateConstructor = isAdaptTo && attr.GenerateCtorForProperty;
                 var nilAttr = member
                     .GetCustomAttributesData()
                     .FirstOrDefault(it => it.AttributeType.Name == "NullableAttribute");
@@ -334,7 +336,13 @@ namespace Mapster.Tool
                     {
                         Name = setting?.TargetPropertyName ?? adaptMember?.Name ?? member.Name,
                         Type = isNullable ? propType.MakeNullable() : propType,
-                        IsReadOnly = isReadOnly,
+                        IsReadOnly = (member.GetCustomAttribute<ReadOnlyAttribute>() is not null 
+                                      | member.ReflectedType?.GetProperty(member.Name)?.SetMethod is null 
+                                      && propType.GetCustomAttribute<ReadOnlyAttribute>() is null) 
+                                     | isReadOnly,
+                        IsInitOnly = member.ReflectedType?.GetProperty(member.Name)?.IsInitOnly() 
+                                     ?? false,
+                        GenerateConstructor = generateConstructor,
                         NullableContext = nilAttrArg is byte b ? (byte?)b : null,
                         Nullable = nilAttrArg is byte[] bytes ? bytes : null,
                     }
@@ -710,5 +718,29 @@ namespace Mapster.Tool
                 sb.Append(name);
             return sb;
         }
+    }
+}
+
+public static class PropertyExtensions
+{
+    /// <summary>
+    /// Determines if this property is marked as init-only.
+    /// </summary>
+    /// <param name="property">The property.</param>
+    /// <returns>True if the property is init-only, false otherwise.</returns>
+    public static bool IsInitOnly(this PropertyInfo property)
+    {
+        if (!property.CanWrite)
+        {
+            return false;
+        }
+ 
+        var setMethod = property.SetMethod;
+ 
+        // Get the modifiers applied to the return parameter.
+        var setMethodReturnParameterModifiers = setMethod!.ReturnParameter.GetRequiredCustomModifiers();
+ 
+        // Init-only properties are marked with the IsExternalInit type.
+        return setMethodReturnParameterModifiers.Contains(typeof(System.Runtime.CompilerServices.IsExternalInit));
     }
 }

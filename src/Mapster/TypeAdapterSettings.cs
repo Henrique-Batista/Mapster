@@ -161,6 +161,11 @@ namespace Mapster
             get => Get<object>(nameof(MapToConstructor));
             set => Set(nameof(MapToConstructor), value);
         }
+        public object? GenerateCtorForProperty
+        {
+            get => Get<object>(nameof(GenerateCtorForProperty));
+            set => Set(nameof(GenerateCtorForProperty), value);
+        }
         public Action<TypeAdapterConfig>? Fork
         {
             get => Get<Action<TypeAdapterConfig>>(nameof(Fork));

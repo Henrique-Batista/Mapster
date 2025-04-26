@@ -10,6 +10,7 @@ namespace ExpressionDebugger
         public string Name { get; set; }
         public bool IsReadOnly { get; set; }
         public bool IsInitOnly { get; set; }
+        public bool GenerateConstructor { get; set; }
 
         /// <summary>
         /// Set to 2 to mark type as nullable

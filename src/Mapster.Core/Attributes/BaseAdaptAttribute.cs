@@ -38,6 +38,11 @@ namespace Mapster
             get => _boolValues.TryGetValue(nameof(MapToConstructor), out var value) && value;
             set => _boolValues[nameof(MapToConstructor)] = value;
         }
+        public bool GenerateCtorForProperty
+        {
+            get => _boolValues.TryGetValue(nameof(GenerateCtorForProperty), out var value) && value;
+            set => _boolValues[nameof(GenerateCtorForProperty)] = value;
+        }
         public bool PreserveReference
         {
             get => _boolValues.TryGetValue(nameof(PreserveReference), out var value) && value;
@@ -89,5 +94,19 @@ namespace Mapster
         {
             MapType = MapType.Projection;
         }
+    }
+    [AttributeUsage(AttributeTargets.Field | AttributeTargets.Property)]
+    public class GenerateCtorForPropertyAttribute : BaseAdaptAttribute
+    {
+        public GenerateCtorForPropertyAttribute(Type type) : base(type)
+        {
+            GenerateCtorForProperty = true;
+        }
+
+        public GenerateCtorForPropertyAttribute(string name) : base(name)
+        {
+            GenerateCtorForProperty = true;
+        }
+        
     }
 }

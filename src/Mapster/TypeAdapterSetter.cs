@@ -244,6 +244,13 @@ namespace Mapster
             setter.Settings.MapToConstructor = value ? "*" : null;
             return setter;
         }
+        public static TSetter GenerateCtorForProperty<TSetter>(this TSetter setter, bool value) where TSetter : TypeAdapterSetter
+        {
+            setter.CheckCompiled();
+
+            setter.Settings.GenerateCtorForProperty = value ? "*" : null;
+            return setter;
+        }
 
         public static TSetter MaxDepth<TSetter>(this TSetter setter, int? value) where TSetter : TypeAdapterSetter
         {
@@ -310,6 +317,8 @@ namespace Mapster
                 setter.IgnoreNullValues(attr.IgnoreNullValues);
             if (attr.GetBooleanSettingValues(nameof(attr.MapToConstructor)) != null)
                 setter.MapToConstructor(attr.MapToConstructor);
+            if (attr.GetBooleanSettingValues(nameof(attr.GenerateCtorForProperty)) != null)
+                setter.GenerateCtorForProperty(attr.GenerateCtorForProperty);
             if (attr.GetBooleanSettingValues(nameof(attr.PreserveReference)) != null)
                 setter.PreserveReference(attr.PreserveReference);
             if (attr.GetBooleanSettingValues(nameof(attr.ShallowCopyForSameType)) != null)

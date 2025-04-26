@@ -1851,7 +1851,9 @@ namespace ExpressionDebugger
                     .ToDictionary(it => it.Name,
                         it =>
                             $"{TranslateNullable(it.Type, it.NullableContext ?? Definitions?.NullableContext, it.Nullable)} {it.Name} {{ get; {(it.IsReadOnly ? "" : it.IsInitOnly ? "init; " : "set; ")}}}");
-                var ctorParams = _properties?.Where(it => it.IsReadOnly).ToList();
+                
+                var ctorParams = _properties?.Where(it => it.GenerateConstructor).ToList();
+                
                 if (Definitions?.TypeName != null)
                 {
                     if (_usings != null)
